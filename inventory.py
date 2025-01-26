@@ -6,34 +6,54 @@
 #==============================================
 
 inventory = []
+MAX_ITEMS = 10
 
 #====Display Inventory====
 def show_inventory():
     if inventory:
         print("\nYour inventory contains:")
-        for index, item in enumerate(inventory, start=1):
-            print(f"{index}. {item}")
+        for index, (item, count) in enumerate(inventory, start=1):
+            print(f"{index}. {item} (x{count})")
         else:
             print("\nYour inventory is empty!")
 
 def add_item(item):
-    inventory.append(item)
-    print(f"\nYou have picked up: {item}")
+    global inventory
+    total_items = sum(count for _, count in inventory)
+    if total_items >= MAX_ITEMS:
+        print("\nYour inventory is full..do you need to drop anything?")
+        return
+    
+    for i, (inv_item, count) in enumerate(inventory):
+        if inv_item == item:
+            inventory[i] = (inv_item, count + 1)
+            print(f"You picked up another {item}. (x{count + 1})")
+            return
+        
+    inventory.append((item, 1))
+    print(f"\nYou have picked up: {item} (x1)")
 
 def remove_item(item):
-    if item in inventory:
-        inventory.remove(item)
-        print(f"\nYou dropped: {item}")
-    else:
+    global inventory
+    for i, (inv_item, count) in enumerate(inventory):
+        if inv_item == item:
+            if count > 1:
+                inventory[i] = (inv_item, count - 1)
+                print(f"\nYou dropped one {item}. (x{count -1})")
+            else:
+                inventory.pop(i)
+                print(f"\nYou dropped: {item}")
+            return
         print(f"\n{item} isn't in your inventory!")
 
 def has_item(item):
-    return item in inventory
+    return any(inv_item == item for inv_item, _ in inventory)
 
 #=====================
 #   Welcome Message
 #=====================
 print("Get ready..choose an item.")
+invalid_attempts = 0
 while True:
     print("\nOptions:")
     print("1. Show Inventory")
@@ -42,7 +62,8 @@ while True:
     print("4. Check for Item")
     print("5. Quit")
 
-    choice = input("Choose and option (1-5): ")
+    choice = input("Choose an option (1-5): ")
+    print("~" * 30)
 
     if choice == "1":
         show_inventory()
@@ -58,9 +79,18 @@ while True:
             print(f"\nYes, you have {item} in your inventory.")
         else:
             print(f"\nNo, {item} isn't in your inventory.")
+        print("~" * 30)
+        invalid_attempts = 0
     elif choice == "5":
         print("\nBye, for now..")
+        print("~" * 30)
         break
     else:
-        print("\nWrong choice..try again??")
+        invalid_attempts += 1
+        print(f"\nWrong choice..you have {3 - invalid_attempts} attempts left.")
+        print("~" * 30)
+        if invalid_attempts >= 3:
+            print("\nYou reached your limit..see ya!")
+            print("~" * 30)
+            break
         
