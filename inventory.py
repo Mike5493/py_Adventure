@@ -16,22 +16,27 @@ def show_inventory():
             print(f"{index}. {item} (x{count})")
         else:
             print("\nYour inventory is empty!")
+        print("~" * 30)
 
 def add_item(item):
     global inventory
     total_items = sum(count for _, count in inventory)
     if total_items >= MAX_ITEMS:
         print("\nYour inventory is full..do you need to drop anything?")
+        print("~" * 30)
         return
     
     for i, (inv_item, count) in enumerate(inventory):
         if inv_item == item:
             inventory[i] = (inv_item, count + 1)
             print(f"You picked up another {item}. (x{count + 1})")
+            print("~" * 30)
             return
         
     inventory.append((item, 1))
     print(f"\nYou have picked up: {item} (x1)")
+    print("~" * 30)
+
 
 def remove_item(item):
     global inventory
@@ -43,8 +48,11 @@ def remove_item(item):
             else:
                 inventory.pop(i)
                 print(f"\nYou dropped: {item}")
+            print("~" * 30)
             return
         print(f"\n{item} isn't in your inventory!")
+        print("~" * 30)
+
 
 def has_item(item):
     return any(inv_item == item for inv_item, _ in inventory)
